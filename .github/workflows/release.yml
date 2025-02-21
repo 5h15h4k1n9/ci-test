@@ -1,0 +1,48 @@
+name: Release Automation
+
+on:
+  release:
+    types:
+      - created
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Git
+        run: |
+          git config --global user.name "${{ secrets.USER_NAME }}"
+          git config --global user.email "${{ secrets.USER_MAIL }}"
+
+      - name: Extract version from release tag
+        id: extract_version
+        run: |
+          TAG_NAME=${{ github.event.release.tag_name }}
+          VERSION=${TAG_NAME//-SNAPSHOT/}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          PATCH_VERSION=$(echo $VERSION | awk -F. '{print $1"."$2"."$3+1}')
+          echo "PATCH_VERSION=$PATCH_VERSION" >> $GITHUB_ENV
+
+      - name: Update version in gradle.properties
+        run: |
+          sed -i "s/version=.*/version=$VERSION/" gradle.properties
+
+      - name: Commit and push release version
+        run: |
+          git checkout -b release/$VERSION
+          git add gradle.properties
+          git commit -m "Release version $VERSION"
+          git push origin release/$VERSION
+
+      - name: Create next snapshot branch
+        run: |
+          sed -i "s/version=.*/version=$PATCH_VERSION-SNAPSHOT/" gradle.properties
+          git checkout -b develop/$PATCH_VERSION-SNAPSHOT
+          git add gradle.properties
+          git commit -m "Prepare for next development iteration $PATCH_VERSION-SNAPSHOT"
+          git push origin develop/$PATCH_VERSION-SNAPSHOT
