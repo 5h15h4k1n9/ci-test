@@ -71,7 +71,7 @@ jobs:
             sed -i "s/ARG VERSION=[0-9.]*/ARG VERSION=$PATCH_BRANCH_NAME-patch/" Dockerfile
             if [[ $(git diff --quiet; echo $?) == 1 ]]; then
               git add build.gradle.kts Dockerfile
-              git commit -m "patch: $PATCH_VERSION"
+              git commit -m "patch: $PATCH_BRANCH_NAME"
               git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git patch/$PATCH_BRANCH_NAME
             fi
         
@@ -96,11 +96,11 @@ jobs:
             git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git release/$VERSION
             
             git checkout $BRANCH
-            sed -i "s/version = \"[0-9.]\"/version = \"$PATCH_VERSION-patch\"/" build.gradle.kts
-            sed -i "s/ARG VERSION=[0-9.]/ARG VERSION=$PATCH_VERSION-patch/" Dockerfile
+            sed -i "s/version = \"[0-9.]*\"/version = \"$PATCH_BRANCH_NAME-patch\"/" build.gradle.kts
+            sed -i "s/ARG VERSION=[0-9.]*/ARG VERSION=$PATCH_BRANCH_NAME-patch/" Dockerfile
             if [[ $(git diff --quiet; echo $?) == 1 ]]; then
               git add build.gradle.kts Dockerfile
-              git commit -m "patch: $PATCH_VERSION"
+              git commit -m "patch: $PATCH_BRANCH_NAME"
               git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git $BRANCH
             fi
           fi
