@@ -24,15 +24,12 @@ jobs:
 
       - name: Extract version from release tag
         id: extract_version
-        run: |
-          TAG_NAME=${{ github.event.release.tag_name }}
-          VERSION=${TAG_NAME//-SNAPSHOT/}
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          PATCH_VERSION=$(echo $VERSION | awk -F. '{print $1"."$2"."$3+1}')
-          echo "PATCH_VERSION=$PATCH_VERSION" >> $GITHUB_ENV
+        run: ../scripts/extract-version.sh
+
       - name: Log version
         run: |
           echo "VERSION=$VERSION"
+          echo "MINOR_VERSION=$MINOR_VERSION"
           echo "PATCH_VERSION=$PATCH_VERSION"
 
 #  release:
