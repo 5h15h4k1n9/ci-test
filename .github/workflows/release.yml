@@ -12,7 +12,7 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     outputs:
-      status: ${{ steps.build-and-test.outputs.status }}
+      status: ${{ steps.build-and-test.outcome }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -30,7 +30,7 @@ jobs:
     needs: build-and-test
     runs-on: ubuntu-latest
     outputs:
-      status: ${{ steps.configure-github.outputs.status }}
+      status: ${{ steps.configure-github.outcome }}
     steps:
       - name: Setup Git
         run: |
@@ -41,7 +41,7 @@ jobs:
     needs: configure-github
     runs-on: ubuntu-latest
     outputs:
-      status: ${{ steps.extract-version.outputs.status }}
+      status: ${{ steps.extract-version.outcome }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -59,8 +59,11 @@ jobs:
           echo "PATCH_VERSION=$PATCH_VERSION"
 
   delete-release:
+    needs:
+      - build-and-test
+      - extract-version
     runs-on: ubuntu-latest
-    if: steps.build-and-test.outputs.status == 'failure' || steps.extract-version.outputs.status == 'failure'
+    if: needs.build-and-test.outputs.status == 'failure' || needs.extract-version.outputs == 'failure'
     steps:
       - name: Delete release
         run: |
