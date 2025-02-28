@@ -67,7 +67,6 @@ jobs:
             release-id: ${{ github.event.release.id }}
             release-tag: ${{ github.event.release.tag_name }}
             repository: ${{ github.repository }}
-            owner: ${{ github.repository_owner }}
 
 #  release:
 #    runs-on: ubuntu-latest
