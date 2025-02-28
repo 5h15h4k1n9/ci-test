@@ -19,7 +19,7 @@ jobs:
       - name: Build and test
         uses: ./.github/actions/build-and-test
         with:
-          distribution: 'adopt-openj9'
+          distribution: 'adopt-openj3213'
           java-version: '17'
           architecture: 'x64'
 
@@ -50,19 +50,20 @@ jobs:
         with:
           tag-name: ${{ github.event.release.tag_name }}
 
-#  delete-release:
-#    needs:
-#      - build-and-test
-#      - extract-version
-#    runs-on: ubuntu-latest
-#    if:  == 'failure' || needs.extract-version.outputs == 'failure'
-#    steps:
-#      - name: Delete release
-#        run: |
-#          git push --delete origin ${{ github.event.release.tag_name }}
-#          gh release delete ${{ github.event.release.tag_name }} --yes
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  delete-release:
+    needs:
+      - build-and-test
+      - configure-git
+      - extract-version
+    if: ${{ failure() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete release
+        run: |
+          git push --delete origin ${{ github.event.release.tag_name }}
+          gh release delete ${{ github.event.release.tag_name }} --yes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 #  release:
 #    runs-on: ubuntu-latest
