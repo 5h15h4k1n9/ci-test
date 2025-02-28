@@ -58,19 +58,19 @@ jobs:
           echo "MINOR_VERSION=$MINOR_VERSION"
           echo "PATCH_VERSION=$PATCH_VERSION"
 
-  delete-release:
-    needs:
-      - build-and-test
-      - extract-version
-    runs-on: ubuntu-latest
-    if: needs.build-and-test.outputs.status == 'failure' || needs.extract-version.outputs == 'failure'
-    steps:
-      - name: Delete release
-        run: |
-          git push --delete origin ${{ github.event.release.tag_name }}
-          gh release delete ${{ github.event.release.tag_name }} --yes
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#  delete-release:
+#    needs:
+#      - build-and-test
+#      - extract-version
+#    runs-on: ubuntu-latest
+#    if:  == 'failure' || needs.extract-version.outputs == 'failure'
+#    steps:
+#      - name: Delete release
+#        run: |
+#          git push --delete origin ${{ github.event.release.tag_name }}
+#          gh release delete ${{ github.event.release.tag_name }} --yes
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 #  release:
 #    runs-on: ubuntu-latest
