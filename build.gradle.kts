@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "com.trikset"
-version = "1.21.0"
+version = "1.31.0"
 
 repositories {
     mavenCentral()
