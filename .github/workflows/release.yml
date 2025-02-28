@@ -16,6 +16,7 @@ jobs:
         uses: ./.github/actions/build-and-test
 
   configure-github:
+    needs: build-and-test
     runs-on: ubuntu-latest
     steps:
       - name: Setup Git
@@ -24,6 +25,7 @@ jobs:
           git config --global user.email "${{ secrets.USER_MAIL }}"
 
   extract-version:
+    needs: configure-github
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
