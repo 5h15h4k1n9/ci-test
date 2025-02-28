@@ -23,3 +23,4 @@ runs:
         echo "VERSION=$VERSION"
         echo "MINOR_VERSION=$MINOR_VERSION"
         echo "PATCH_VERSION=$PATCH_VERSION"
+        echo "PATCH_BRANCH_NAME=$PATCH_BRANCH_NAME"
