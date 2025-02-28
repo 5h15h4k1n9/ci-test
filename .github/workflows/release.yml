@@ -70,17 +70,17 @@ jobs:
 
       - name: Get branch
         id: branch
-        run: |
+        run: echo "$GITHUB_ENV"
 #          BRANCH=$(echo ${{ github.event.bra }} | awk -F. '{print "release/"$1"."$2}')
-          echo "$GITHUB_ENV"
+#          echo "$GITHUB_ENV"
 
-      - name: Update version
-        run: |
-          sed -i "s/version = \"[0-9.]*\"/version = \"$VERSION\"/" build.gradle.kts
-          sed -i "s/ARG VERSION=[0-9.]*/ARG VERSION=$VERSION/" Dockerfile
-          git add build.gradle.kts
-          git commit -m "Release version $VERSION"
-          git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git ${{ steps.branch.outputs.branch }}
+#      - name: Update version
+#        run: |
+#          sed -i "s/version = \"[0-9.]*\"/version = \"$VERSION\"/" build.gradle.kts
+#          sed -i "s/ARG VERSION=[0-9.]*/ARG VERSION=$VERSION/" Dockerfile
+#          git add build.gradle.kts
+#          git commit -m "Release version $VERSION"
+#          git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git ${{ steps.branch.outputs.branch }}
 
 
 #  release:
