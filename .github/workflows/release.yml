@@ -28,8 +28,8 @@ jobs:
       - name: Build and test
         uses: actions/setup-java@v4
         with:
-          distribution: 'adoptopenjdk'
-          java-version: '17'
+          distribution: adoptopenjdk
+          java-version: 17
   configure-github:
     needs: build-and-test
     runs-on: ubuntu-latest
