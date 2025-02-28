@@ -58,12 +58,12 @@ jobs:
     if: ${{ failure() }}
     runs-on: ubuntu-latest
     steps:
-      - name: Delete release
+      - name: Delete release if previous jobs failed
         run: |
-          git push --delete origin ${{ github.event.release.tag_name }}
-          gh release delete ${{ github.event.release.tag_name }} --yes
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          echo "Deleting release due to failure in previous jobs"
+          curl -X DELETE \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/5h15h4k1n9/ci-test/releases/${{ github.event.release.id }}
 
 #  release:
 #    runs-on: ubuntu-latest
