@@ -22,7 +22,7 @@ jobs:
       - name: Build and Test
         uses: ./.github/actions/build-and-test
         with:
-          distribution: 'corretto'
+          distribution: 'adoptopenjdk'
           java-version: '17'
           architecture: 'x64'
 
