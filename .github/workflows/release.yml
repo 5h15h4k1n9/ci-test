@@ -70,7 +70,9 @@ jobs:
 
       - name: Get branch
         id: branch
-        run: echo ::set-output name=branch::$(echo $GITHUB_REF | awk -F'/' '{print $3}')
+        run: |
+          BRANCH=$(echo ${{ github.event.release.tag_name }} | awk -F. '{print "release/"$1"."$2}')
+          echo "branch=$BRANCH" >> $GITHUB_ENV
 
       - name: Update version
         run: |
