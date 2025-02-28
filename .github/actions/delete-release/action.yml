@@ -1,0 +1,29 @@
+name: Delete Release
+description: Deletes release and its tag
+inputs:
+  github-token:
+    description: 'The GitHub token'
+    required: true
+  release-id:
+    description: 'The ID of the release to delete'
+    required: true
+  release-tag:
+    description: 'The tag of the release to delete'
+    required: true
+  repository:
+    description: 'The repository to delete the release from'
+    required: true
+  owner:
+    description: 'The owner of the repository'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Delete release
+      shell: bash
+      run: /.github/scripts/delete-release.sh ${{ inputs.github-token }} ${{ inputs.owner }} ${{ inputs.repository }} ${{ inputs.release-id }}
+
+    - name: Delete release tag
+      shell: bash
+      run: /.github/scripts/delete-tag.sh ${{ inputs.github-token }} ${{ inputs.owner }} ${{ inputs.repository }} ${{ inputs.release-tag }}
