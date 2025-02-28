@@ -1,14 +1,15 @@
-name: Release Workflow
+name: Release Automation
 
 on:
   release:
-    types: [published]
+    types:
+      - created
 
 permissions:
   contents: write
 
 jobs:
-  create-release-branches:
+  release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -16,79 +17,35 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Determine new version
-        id: version
-        run: |
-          CURRENT_VERSION=$(git describe --tags --abbrev=0 || echo "0.0.0")
-          MAJOR=$(echo "$CURRENT_VERSION" | cut -d. -f1)
-          MINOR=$(echo "$CURRENT_VERSION" | cut -d. -f2)
-          PATCH=$(echo "$CURRENT_VERSION" | cut -d. -f3)
-
-          if [[ "${{ github.ref }}" == "refs/heads/master" ]]; then
-            NEW_VERSION="$MAJOR.$((MINOR + 1)).0"
-            RELEASE_BRANCH="release/$NEW_VERSION"
-            PATCH_BRANCH="patch/$NEW_VERSION"
-          elif [[ "${{ github.ref }}" == refs/heads/patch/* ]]; then
-            NEW_VERSION="$MAJOR.$MINOR.$((PATCH + 1))"
-            RELEASE_BRANCH="hotfix/$NEW_VERSION"
-          fi
-
-          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
-          echo "RELEASE_BRANCH=$RELEASE_BRANCH" >> $GITHUB_ENV
-          echo "PATCH_BRANCH=$PATCH_BRANCH" >> $GITHUB_ENV
-
       - name: Setup Git
         run: |
           git config --global user.name "${{ secrets.USER_NAME }}"
           git config --global user.email "${{ secrets.USER_MAIL }}"
 
-      - name: Create and push release branches
+      - name: Extract version from release tag
+        id: extract_version
         run: |
-          git checkout -b "$RELEASE_BRANCH"
-          git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git origin "$RELEASE_BRANCH"
-          if [[ ! -z "$PATCH_BRANCH" ]]; then
-            git checkout -b "$PATCH_BRANCH"
-            git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git origin "$PATCH_BRANCH"
-          fi
+          TAG_NAME=${{ github.event.release.tag_name }}
+          VERSION=${TAG_NAME//-SNAPSHOT/}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          PATCH_VERSION=$(echo $VERSION | awk -F. '{print $1"."$2"."$3+1}')
+          echo "PATCH_VERSION=$PATCH_VERSION" >> $GITHUB_ENV
 
-  build-and-push:
-    needs: create-release-branches
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Update project version
+      - name: Update version in build.gradle.kts
         run: |
-          ./gradlew version -PreleaseVersion=$NEW_VERSION
+          sed -i "s/version = \"[0-9.]*-SNAPSHOT\"/version = \"$VERSION\"/" build.gradle.kts
 
-      - name: Build project
+      - name: Commit and push release version
         run: |
-          ./gradlew build
+          git checkout -b release/$VERSION
+          git add build.gradle.kts
+          git commit -m "Release version $VERSION"
+          git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git release/$VERSION
 
-#      - name: Log in to DockerHub
-#        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-#      - name: Build and push Docker image
-#        run: |
-#          IMAGE_NAME=my-app:$NEW_VERSION
-#          docker build -t $IMAGE_NAME .
-#          docker tag $IMAGE_NAME my-dockerhub-user/$IMAGE_NAME
-#          docker push my-dockerhub-user/$IMAGE_NAME
-
-      - name: Setup Git
+      - name: Create next snapshot branch
         run: |
-          git config --global user.name "${{ secrets.USER_NAME }}"
-          git config --global user.email "${{ secrets.USER_MAIL }}"
-
-      - name: Commit updated version
-        run: |
-          git add .
-          git commit -m "Bump version to $NEW_VERSION"
-          git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git origin HEAD
+          sed -i "s/version = \"[0-9.]*\"/version = \"$PATCH_VERSION-SNAPSHOT\"/" build.gradle.kts
+          git checkout -b develop/$PATCH_VERSION-SNAPSHOT
+          git add build.gradle.kts
+          git commit -m "Prepare for next development iteration $PATCH_VERSION-SNAPSHOT"
+          git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git develop/$PATCH_VERSION-SNAPSHOT
