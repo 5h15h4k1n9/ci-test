@@ -64,6 +64,12 @@ jobs:
           curl -X DELETE \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             https://api.github.com/repos/5h15h4k1n9/ci-test/releases/${{ github.event.release.id }}
+      - name: Delete release tag if previous jobs failed
+        run: |
+          echo "Deleting release tag due to failure in previous jobs"
+          curl -X DELETE \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/5h15h4k1n9/ci-test/git/refs/tags/${{ github.event.release.tag_name }}
 
 #  release:
 #    runs-on: ubuntu-latest
