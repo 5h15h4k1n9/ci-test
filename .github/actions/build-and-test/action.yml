@@ -1,7 +1,23 @@
 name: Build and Test
 description: Builds and tests the project
+inputs:
+  distribution:
+    description: 'The distribution of Java to use'
+    required: true
+    default: 'openjdk'
+  java-version:
+    description: 'The version of Java to use'
+    required: true
+    default: '17'
+  architecture:
+    description: 'The architecture of the Java version'
+    required: true
+    default: 'x64'
+  gradle-version:
+    description: 'The version of Gradle to use'
+    required: true
+    default: '7.2'
 runs:
-  runs-on: ubuntu-latest
   steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -11,9 +27,9 @@ runs:
     - name: Setup Java
       uses: actions/setup-java@v2
       with:
-        distribution: 'openjdk'
-        java-version: '17'
-        architecture: 'x64'
+        distribution: ${{ inputs.distribution }}
+        java-version: ${{ inputs.java-version }}
+        architecture: ${{ inputs.architecture }}
 
     - name: Cache Gradle packages
       uses: actions/cache@v2
@@ -27,12 +43,15 @@ runs:
 
 
     - name: Build with Gradle
+      shell: bash
       run: ./gradlew build
 
     - name: Test with Gradle
+      shell: bash
       run: ./gradlew test
 
     - name: Cleanup Gradle Cache
+      shell: bash
       run: |
         rm -f ~/.gradle/caches/modules-2/modules-2.lock
         rm -f ~/.gradle/caches/modules-2/gc.properties
