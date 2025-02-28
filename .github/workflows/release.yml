@@ -11,6 +11,8 @@ permissions:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.build-and-test.outputs.status }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -27,6 +29,8 @@ jobs:
   configure-github:
     needs: build-and-test
     runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.configure-github.outputs.status }}
     steps:
       - name: Setup Git
         run: |
@@ -36,6 +40,8 @@ jobs:
   extract-version:
     needs: configure-github
     runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.extract-version.outputs.status }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -51,6 +57,17 @@ jobs:
           echo "VERSION=$VERSION"
           echo "MINOR_VERSION=$MINOR_VERSION"
           echo "PATCH_VERSION=$PATCH_VERSION"
+
+  delete-release:
+    runs-on: ubuntu-latest
+    if: steps.build-and-test.outputs.status == 'failure' || steps.extract-version.outputs.status == 'failure'
+    steps:
+      - name: Delete release
+        run: |
+          git push --delete origin ${{ github.event.release.tag_name }}
+          gh release delete ${{ github.event.release.tag_name }} --yes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 #  release:
 #    runs-on: ubuntu-latest
