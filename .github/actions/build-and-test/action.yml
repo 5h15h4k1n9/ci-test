@@ -4,7 +4,7 @@ inputs:
   distribution:
     description: 'The distribution of Java to use'
     required: true
-    default: 'corretto'
+    default: 'adoptopenjdk'
   java-version:
     description: 'The version of Java to use'
     required: true
@@ -22,9 +22,9 @@ runs:
         fetch-depth: 0
 
     - name: Setup Java
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v4
       with:
-        distribution: 'corretto'
+        distribution: '${{ inputs.distribution }}'
         java-version: '${{ inputs.java-version }}'
         architecture: '${{ inputs.architecture }}'
 
