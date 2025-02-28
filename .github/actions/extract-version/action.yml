@@ -15,7 +15,7 @@ runs:
     - name: Extract version from release tag
       shell: bash
       id: extract_version
-      run: ./.github/scripts/extract-version.sh "${{ inputs.tag-name }}"
+      run: ./.github/scripts/extract-versions.sh "${{ inputs.tag-name }}"
 
     - name: Log version
       shell: bash
