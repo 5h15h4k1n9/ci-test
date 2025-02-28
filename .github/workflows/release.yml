@@ -9,22 +9,13 @@ permissions:
   contents: write
 
 jobs:
-  checkout:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
   build-and-test:
-    needs: checkout
     runs-on: ubuntu-latest
     outputs:
       status: ${{ steps.build-and-test.outcome }}
     steps:
-      - name: Build and Test
-        uses: ./.github/actions/build-and-test
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/build-and-test
         with:
           distribution: 'adopt-openj9'
           java-version: '17'
@@ -36,6 +27,7 @@ jobs:
     outputs:
       status: ${{ steps.configure-github.outcome }}
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/configure-git
         with:
           user-name: ${{ secrets.USER_NAME }}
@@ -47,8 +39,8 @@ jobs:
     outputs:
       status: ${{ steps.extract-version.outcome }}
     steps:
-      - name: Extract version from release tag
-        uses: ./.github/actions/extract-version
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/extract-version
         with:
           tag-name: ${{ github.event.release.tag_name }}
 
