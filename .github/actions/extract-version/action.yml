@@ -1,0 +1,25 @@
+name: Configure Git
+description: Adds the necessary configurations to Git
+inputs:
+  tag-name:
+    description: 'The name of the tag'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Extract version from release tag
+      shell: bash
+      id: extract_version
+      run: ./.github/scripts/extract-version.sh "${{ inputs.tag-name }}"
+
+    - name: Log version
+      shell: bash
+      run: |
+        echo "VERSION=$VERSION"
+        echo "MINOR_VERSION=$MINOR_VERSION"
+        echo "PATCH_VERSION=$PATCH_VERSION"

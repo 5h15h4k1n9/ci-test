@@ -9,53 +9,48 @@ permissions:
   contents: write
 
 jobs:
-  build-and-test:
+  checkout:
     runs-on: ubuntu-latest
-    outputs:
-      status: ${{ steps.build-and-test.outcome }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+  build-and-test:
+    needs: checkout
+    runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.build-and-test.outcome }}
+    steps:
       - name: Build and Test
         uses: ./.github/actions/build-and-test
         with:
           distribution: 'adopt-openj9'
           java-version: '17'
           architecture: 'x64'
-  configure-github:
+
+  configure-git:
     needs: build-and-test
     runs-on: ubuntu-latest
     outputs:
       status: ${{ steps.configure-github.outcome }}
     steps:
-      - name: Setup Git
-        run: |
-          git config --global user.name "${{ secrets.USER_NAME }}"
-          git config --global user.email "${{ secrets.USER_MAIL }}"
+      - uses: ./.github/actions/configure-git
+        with:
+          user-name: ${{ secrets.USER_NAME }}
+          user-mail: ${{ secrets.USER_MAIL }}
 
   extract-version:
-    needs: configure-github
+    needs: configure-git
     runs-on: ubuntu-latest
     outputs:
       status: ${{ steps.extract-version.outcome }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
       - name: Extract version from release tag
-        id: extract_version
-        run: ./.github/scripts/extract-version.sh "${{ github.event.release.tag_name }}"
-
-      - name: Log version
-        run: |
-          echo "VERSION=$VERSION"
-          echo "MINOR_VERSION=$MINOR_VERSION"
-          echo "PATCH_VERSION=$PATCH_VERSION"
+        uses: ./.github/actions/extract-version
+        with:
+          tag-name: ${{ github.event.release.tag_name }}
 
 #  delete-release:
 #    needs:

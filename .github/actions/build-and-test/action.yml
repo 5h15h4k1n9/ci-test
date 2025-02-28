@@ -13,14 +13,10 @@ inputs:
     description: 'The architecture of the Java version'
     required: true
     default: 'x64'
+
 runs:
   using: 'composite'
   steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
     - name: Setup Java
       uses: actions/setup-java@v4
       with:
@@ -37,7 +33,6 @@ runs:
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle
-
 
     - name: Build with Gradle
       shell: bash
