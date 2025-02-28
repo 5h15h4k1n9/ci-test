@@ -45,7 +45,7 @@ jobs:
           if [[ $VERSION =~ ^[0-9]+\.[0-9]+\.0$ ]]; then
               BRANCH=master
           else
-              BRANCH=patch/$PATCH_VERSION
+              BRANCH=patch/$VERSION
           fi
           echo "BRANCH=$BRANCH" >> $GITHUB_ENV
 
