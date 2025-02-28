@@ -24,7 +24,6 @@ jobs:
         with:
           distribution: 'adoptopenjdk'
           java-version: '17'
-          architecture: 'x64'
 
   configure-github:
     needs: build-and-test
