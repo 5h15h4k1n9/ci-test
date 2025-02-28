@@ -15,7 +15,9 @@ jobs:
       status: ${{ steps.build-and-test.outcome }}
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/build-and-test
+
+      - name: Build and test
+        uses: ./.github/actions/build-and-test
         with:
           distribution: 'adopt-openj9'
           java-version: '17'
@@ -28,7 +30,9 @@ jobs:
       status: ${{ steps.configure-github.outcome }}
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/configure-git
+
+      - name: Configure Git
+        uses: ./.github/actions/configure-git
         with:
           user-name: ${{ secrets.USER_NAME }}
           user-mail: ${{ secrets.USER_MAIL }}
@@ -40,7 +44,9 @@ jobs:
       status: ${{ steps.extract-version.outcome }}
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/extract-version
+
+      - name: Extract version
+        uses: ./.github/actions/extract-version
         with:
           tag-name: ${{ github.event.release.tag_name }}
 
