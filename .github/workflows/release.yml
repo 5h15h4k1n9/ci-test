@@ -19,7 +19,7 @@ jobs:
       - name: Build and test
         uses: ./.github/actions/build-and-test
         with:
-          distribution: 'adopt-openj3213'
+          distribution: 'adopt-openj9'
           java-version: '17'
           architecture: 'x64'
 
