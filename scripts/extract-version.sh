@@ -1,4 +1,4 @@
-TAG_NAME=${{ github.event.release.tag_name }}
+TAG_NAME=$0
 
 if [[ $TAG_NAME =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     VERSION=${TAG_NAME:1}

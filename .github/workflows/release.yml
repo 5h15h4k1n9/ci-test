@@ -24,7 +24,7 @@ jobs:
 
       - name: Extract version from release tag
         id: extract_version
-        run: ./scripts/extract-version.sh
+        run: ./scripts/extract-version.sh ${{ github.event.release.tag_name }}
 
       - name: Log version
         run: |
