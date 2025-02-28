@@ -9,7 +9,21 @@ permissions:
   contents: write
 
 jobs:
-  configure-and-extract-version:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build and Test
+        uses: ./.github/actions/build-and-test
+
+  configure-github:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Git
+        run: |
+          git config --global user.name "${{ secrets.USER_NAME }}"
+          git config --global user.email "${{ secrets.USER_MAIL }}"
+
+  extract-version:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -17,14 +31,9 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Git
-        run: |
-          git config --global user.name "${{ secrets.USER_NAME }}"
-          git config --global user.email "${{ secrets.USER_MAIL }}"
-
       - name: Extract version from release tag
         id: extract_version
-        run: ./scripts/extract-version.sh "${{ github.event.release.tag_name }}"
+        run: ./.github/scripts/extract-version.sh "${{ github.event.release.tag_name }}"
 
       - name: Log version
         run: |
