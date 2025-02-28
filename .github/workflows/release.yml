@@ -11,8 +11,6 @@ permissions:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    outputs:
-      status: ${{ steps.build-and-test.outcome }}
     steps:
       - uses: actions/checkout@v4
 
@@ -26,8 +24,6 @@ jobs:
   extract-version:
     needs: build-and-test
     runs-on: ubuntu-latest
-    outputs:
-      status: ${{ steps.extract-version.outcome }}
     steps:
       - uses: actions/checkout@v4
 
@@ -68,8 +64,10 @@ jobs:
           user-name: ${{ secrets.USER_NAME }}
           user-mail: ${{ secrets.USER_MAIL }}
 
+      - name: ret
+        run: echo "T:test" >> "$GITHUB_ENV"
+
       - name: Get branch
-        id: branch
         run: echo "$GITHUB_ENV"
 #          BRANCH=$(echo ${{ github.event.bra }} | awk -F. '{print "release/"$1"."$2}')
 #          echo "$GITHUB_ENV"
