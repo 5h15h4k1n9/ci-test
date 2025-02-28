@@ -21,21 +21,31 @@ jobs:
           java-version: '17'
           architecture: 'x64'
 
-  extract-version:
+  update-versions:
     needs: build-and-test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Extract version
         uses: ./.github/actions/extract-version
         with:
           tag-name: ${{ github.event.release.tag_name }}
 
+      - name: Configure Git
+        uses: ./.github/actions/configure-git
+        with:
+          user-name: ${{ secrets.USER_NAME }}
+          user-mail: ${{ secrets.USER_MAIL }}
+
+      - name: Get branch
+        run: echo "$GITHUB_ENV"
+
   delete-release:
     needs:
       - build-and-test
-      - extract-version
       - update-versions
     if: ${{ failure() }}
     runs-on: ubuntu-latest
@@ -49,26 +59,6 @@ jobs:
           release-id: ${{ github.event.release.id }}
           release-tag: ${{ github.event.release.tag_name }}
           repository: ${{ github.repository }}
-
-  update-versions:
-    needs: extract-version
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Configure Git
-        uses: ./.github/actions/configure-git
-        with:
-          user-name: ${{ secrets.USER_NAME }}
-          user-mail: ${{ secrets.USER_MAIL }}
-
-      - name: ret
-        run: echo "T=$VERSION" >> "$GITHUB_ENV"
-
-      - name: Get branch
-        run: echo "$GITHUB_ENV"
 #          BRANCH=$(echo ${{ github.event.bra }} | awk -F. '{print "release/"$1"."$2}')
 #          echo "$GITHUB_ENV"
 
