@@ -84,12 +84,21 @@ jobs:
               git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git master
             fi
           else
+            sed -i "s/version = \"[0-9.]*[a-z\-]*\"/version = \"$VERSION\"/" build.gradle.kts
+            sed -i "s/ARG VERSION=[0-9.]*[a-z\-]*/ARG VERSION=$VERSION/" Dockerfile
+            if [[ $(git diff --quiet; echo $?) == 1 ]]; then
+              git add build.gradle.kts Dockerfile
+              git commit -m "release: $VERSION"
+              git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git patch/$VERSION
+            fi
+          
             git checkout -b release/$VERSION
             git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git release/$VERSION
             
-            git checkout -b patch/$PATCH_VERSION
-            sed -i "s/version = \"[0-9.]*[a-z\-]*\"/version = \"$PATCH_VERSION-patch\"/" build.gradle.kts
-            sed -i "s/ARG VERSION=[0-9.]*[a-z\-]*/ARG VERSION=$PATCH_VERSION-patch/" Dockerfile
+            git checkout patch/$VERSION
+            git branch -m patch/$PATCH_VERSION
+            sed -i "s/version = \"[0-9.]\"/version = \"$PATCH_VERSION-patch\"/" build.gradle.kts
+            sed -i "s/ARG VERSION=[0-9.]/ARG VERSION=$PATCH_VERSION-patch/" Dockerfile
             if [[ $(git diff --quiet; echo $?) == 1 ]]; then
               git add build.gradle.kts Dockerfile
               git commit -m "patch: $PATCH_VERSION"
