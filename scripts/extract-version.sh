@@ -1,4 +1,4 @@
-TAG_NAME=$0
+TAG_NAME=$1
 
 if [[ $TAG_NAME =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     VERSION=${TAG_NAME:1}
