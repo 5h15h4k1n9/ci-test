@@ -65,7 +65,7 @@ jobs:
           user-mail: ${{ secrets.USER_MAIL }}
 
       - name: ret
-        run: echo "T:test" >> "$GITHUB_ENV"
+        run: echo "T=$VERSION" >> "$GITHUB_ENV"
 
       - name: Get branch
         run: echo "$GITHUB_ENV"
