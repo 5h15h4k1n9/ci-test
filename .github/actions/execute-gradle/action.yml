@@ -1,18 +1,22 @@
-name: Build and Test
-description: Builds and tests the project
+name: Execute Gradle
+description: Executes Gradle commands
 inputs:
   distribution:
     description: 'The distribution of Java to use'
-    required: true
+    required: false
     default: 'adopt-openj9'
   java-version:
     description: 'The version of Java to use'
-    required: true
+    required: false
     default: '17'
   architecture:
     description: 'The architecture of the Java version'
-    required: true
+    required: false
     default: 'x64'
+  gradle-commands:
+    description: 'The Gradle commands to run'
+    required: false
+    default: 'build test'
 
 runs:
   using: 'composite'
@@ -34,13 +38,9 @@ runs:
         restore-keys: |
           ${{ runner.os }}-gradle
 
-    - name: Build with Gradle
+    - name: Execute Gradle commands
       shell: bash
-      run: ./gradlew build
-
-    - name: Test with Gradle
-      shell: bash
-      run: ./gradlew test
+      run: ./gradlew ${{ inputs.gradle-commands }}
 
     - name: Cleanup Gradle Cache
       shell: bash

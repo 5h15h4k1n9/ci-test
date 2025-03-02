@@ -3,16 +3,21 @@ description: Deletes release and its tag
 inputs:
   github-token:
     description: 'The GitHub token'
-    required: true
+    required: false
+    default: ${{ secrets.GITHUB_TOKEN }}
   release-id:
     description: 'The ID of the release to delete'
-    required: true
+    required: false
+    default: ${{ github.event.release.id }}
   release-tag:
     description: 'The tag of the release to delete'
-    required: true
+    required: false
+    default: ${{ github.event.release.tag_name }}
   repository:
     description: 'The repository to delete the release from'
-    required: true
+    required: false
+    default: ${{ github.repository }}
+
 runs:
   using: 'composite'
   steps:

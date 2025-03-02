@@ -9,20 +9,29 @@ permissions:
   contents: write
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - name: Build and test
-        uses: ./.github/actions/build-and-test
+        uses: ./.github/actions/execute-gradle
         with:
-          distribution: 'adopt-openj9'
-          java-version: '17'
-          architecture: 'x64'
+          gradle-commands: 'build'
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and test
+        uses: ./.github/actions/execute-gradle
+        with:
+          gradle-commands: 'test'
 
   publish-release:
-    needs: build-and-test
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,69 +40,77 @@ jobs:
 
       - name: Configure Git
         uses: ./.github/actions/configure-git
-        with:
-          user-name: ${{ secrets.USER_NAME }}
-          user-mail: ${{ secrets.USER_MAIL }}
 
       - name: Extract versions
         uses: ./.github/actions/extract-version
-        with:
-          tag-name: ${{ github.event.release.tag_name }}
 
       - name: Get branch
-        run: |
-          if [[ $VERSION =~ ^[0-9]+\.[0-9]+\.0$ ]]; then
-              BRANCH=master
-          else
-              BRANCH=patch/$PATCH_BRANCH_NAME
-          fi
-          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
+        uses: ./.github/actions/extract-version
 
-      - name: Create branches
-        run: |
-          if [[ $BRANCH == "master" ]]; then
-            git checkout -b release/$VERSION
-            git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git release/$VERSION
-            sed -i "s/version = \"[0-9.]*\"/version = \"$VERSION\"/" build.gradle.kts
-            sed -i "s/ARG VERSION=[0-9.]*/ARG VERSION=$VERSION/" Dockerfile
-            if [[ $(git diff --quiet; echo $?) == 1 ]]; then
-                git add build.gradle.kts Dockerfile
-                git commit -m "release: $VERSION"
-                git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git release/$VERSION
-            fi          
-        
-            git checkout -b patch/$PATCH_BRANCH_NAME
-            sed -i "s/version = \"[0-9.]*\"/version = \"$PATCH_BRANCH_NAME-patch\"/" build.gradle.kts
-            sed -i "s/ARG VERSION=[0-9.]*/ARG VERSION=$PATCH_BRANCH_NAME-patch/" Dockerfile
-            if [[ $(git diff --quiet; echo $?) == 1 ]]; then
-              git add build.gradle.kts Dockerfile
-              git commit -m "patch: $PATCH_BRANCH_NAME"
-              git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git patch/$PATCH_BRANCH_NAME
-            fi
-        
-            git checkout $BRANCH
-            sed -i "s/version = \"[0-9.]*\"/version = \"$MINOR_VERSION\"/" build.gradle.kts
-            sed -i "s/ARG VERSION=[0-9.]*/ARG VERSION=$MINOR_VERSION/" Dockerfile
-            if [[ $(git diff --quiet; echo $?) == 1 ]]; then
-              git add build.gradle.kts Dockerfile
-              git commit -m "feature: $MINOR_VERSION"
-              git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git $BRANCH
-            fi
-          else
-            git checkout -b release/$VERSION
-            sed -i "s/version = \"[0-9.]*[a-z\-]*\"/version = \"$VERSION\"/" build.gradle.kts
-            sed -i "s/ARG VERSION=[0-9.]*[a-z\-]*/ARG VERSION=$VERSION/" Dockerfile
-            
-            if [[ $(git diff --quiet; echo $?) == 1 ]]; then
-              git add build.gradle.kts Dockerfile
-              git commit -m "release: $VERSION"
-              git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git release/$VERSION
-            fi
-          fi
+#      - name: Create branches
+#        run: |
+#          if [[ $BRANCH == "master" ]]; then
+#            git checkout -b release/$VERSION
+#            git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git release/$VERSION
+#            sed -i "s/version = \"[0-9.]*\"/version = \"$VERSION\"/" build.gradle.kts
+#            sed -i "s/ARG VERSION=[0-9.]*/ARG VERSION=$VERSION/" Dockerfile
+#            if [[ $(git diff --quiet; echo $?) == 1 ]]; then
+#                git add build.gradle.kts Dockerfile
+#                git commit -m "release: $VERSION"
+#                git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git release/$VERSION
+#            fi
+#
+#            git checkout -b patch/$PATCH_BRANCH_NAME
+#            sed -i "s/version = \"[0-9.]*\"/version = \"$PATCH_BRANCH_NAME-patch\"/" build.gradle.kts
+#            sed -i "s/ARG VERSION=[0-9.]*/ARG VERSION=$PATCH_BRANCH_NAME-patch/" Dockerfile
+#            if [[ $(git diff --quiet; echo $?) == 1 ]]; then
+#              git add build.gradle.kts Dockerfile
+#              git commit -m "patch: $PATCH_BRANCH_NAME"
+#              git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git patch/$PATCH_BRANCH_NAME
+#            fi
+#
+#            git checkout $BRANCH
+#            sed -i "s/version = \"[0-9.]*\"/version = \"$MINOR_VERSION\"/" build.gradle.kts
+#            sed -i "s/ARG VERSION=[0-9.]*/ARG VERSION=$MINOR_VERSION/" Dockerfile
+#            if [[ $(git diff --quiet; echo $?) == 1 ]]; then
+#              git add build.gradle.kts Dockerfile
+#              git commit -m "feature: $MINOR_VERSION"
+#              git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git $BRANCH
+#            fi
+#          else
+#            git checkout -b release/$VERSION
+#            sed -i "s/version = \"[0-9.]*[a-z\-]*\"/version = \"$VERSION\"/" build.gradle.kts
+#            sed -i "s/ARG VERSION=[0-9.]*[a-z\-]*/ARG VERSION=$VERSION/" Dockerfile
+#
+#            if [[ $(git diff --quiet; echo $?) == 1 ]]; then
+#              git add build.gradle.kts Dockerfile
+#              git commit -m "release: $VERSION"
+#              git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git release/$VERSION
+#            fi
+#          fi
+
+#      - name: Login to DockerHub
+#        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+#
+#      - name: Cache Docker layers
+#        uses: actions/cache@v3
+#        with:
+#          path: /tmp/.buildx-cache
+#          key: ${{ runner.os }}-buildx-${{ github.sha }}
+#          restore-keys: |
+#            ${{ runner.os }}-buildx-
+#
+#      - name: Build and push Docker image
+#        run: |
+#          docker build \
+#            --tag ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:"$VERSION" \
+#            -f Dockerfile .
+#          docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:"$VERSION"
 
   delete-release:
     needs:
-      - build-and-test
+      - build
+      - test
       - publish-release
     if: ${{ failure() }}
     runs-on: ubuntu-latest
@@ -102,61 +119,3 @@ jobs:
 
       - name: Delete release
         uses: ./.github/actions/delete-release
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          release-id: ${{ github.event.release.id }}
-          release-tag: ${{ github.event.release.tag_name }}
-          repository: ${{ github.repository }}
-#          BRANCH=$(echo ${{ github.event.bra }} | awk -F. '{print "release/"$1"."$2}')
-#          echo "$GITHUB_ENV"
-
-#      - name: Update version
-#        run: |
-#          sed -i "s/version = \"[0-9.]*\"/version = \"$VERSION\"/" build.gradle.kts
-#          sed -i "s/ARG VERSION=[0-9.]*/ARG VERSION=$VERSION/" Dockerfile
-#          git add build.gradle.kts
-#          git commit -m "Release version $VERSION"
-#          git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git ${{ steps.branch.outputs.branch }}
-
-
-#  release:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Checkout repository
-#        uses: actions/checkout@v4
-#        with:
-#          fetch-depth: 0
-#
-#      - name: Setup Git
-#        run: |
-#          git config --global user.name "${{ secrets.USER_NAME }}"
-#          git config --global user.email "${{ secrets.USER_MAIL }}"
-#
-#      - name: Extract version from release tag
-#        id: extract_version
-#        run: |
-#          TAG_NAME=${{ github.event.release.tag_name }}
-#          VERSION=${TAG_NAME//-SNAPSHOT/}
-#          echo "VERSION=$VERSION" >> $GITHUB_ENV
-#          PATCH_VERSION=$(echo $VERSION | awk -F. '{print $1"."$2"."$3+1}')
-#          echo "PATCH_VERSION=$PATCH_VERSION" >> $GITHUB_ENV
-#
-#      - name: Update version in build.gradle.kts
-#        run: |
-#          sed -i "s/version = \"[0-9.]*-SNAPSHOT\"/version = \"$VERSION\"/" build.gradle.kts
-#
-#      - name: Commit and push release version
-#        run: |
-#          git checkout -b release/$VERSION
-#          git add build.gradle.kts
-#          git commit -m "Release version $VERSION"
-#          git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git release/$VERSION
-#
-#      - name: Create next snapshot branch
-#        run: |
-#          sed -i "s/version = \"[0-9.]*\"/version = \"$PATCH_VERSION-SNAPSHOT\"/" build.gradle.kts
-#          git checkout -b develop/$PATCH_VERSION-SNAPSHOT
-#          git add build.gradle.kts
-#          git commit -m "Prepare for next development iteration $PATCH_VERSION-SNAPSHOT"
-#          git push https://x-access-token:${{ secrets.USER_TOKEN }}@github.com/${{ github.repository }}.git develop/$PATCH_VERSION-SNAPSHOT
-#

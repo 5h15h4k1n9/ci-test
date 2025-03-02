@@ -3,24 +3,20 @@ description: Adds the necessary configurations to Git
 inputs:
   tag-name:
     description: 'The name of the tag'
-    required: true
+    required: false
+    default: ${{ github.event.release.tag_name }}
+
 runs:
   using: 'composite'
   steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
     - name: Extract version from release tag
       shell: bash
-      id: extract_version
       run: ./.github/scripts/extract-versions.sh "${{ inputs.tag-name }}"
 
     - name: Log version
       shell: bash
       run: |
-        echo "VERSION=$VERSION"
-        echo "MINOR_VERSION=$MINOR_VERSION"
-        echo "PATCH_VERSION=$PATCH_VERSION"
-        echo "PATCH_BRANCH_NAME=$PATCH_BRANCH_NAME"
+        echo "VERSION=${{ github.env.VERSION }}"
+        echo "MINOR_VERSION=${{ github.env.MINOR_VERSION }}"
+        echo "PATCH_VERSION=${{ github.env.PATCH_VERSION }}"
+        echo "PATCH_BRANCH_NAME=${{ github.env.PATCH_BRANCH_NAME }}"

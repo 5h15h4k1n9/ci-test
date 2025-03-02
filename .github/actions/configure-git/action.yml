@@ -3,10 +3,12 @@ description: Adds the necessary configurations to Git
 inputs:
   user-name:
     description: 'The name of the user'
-    required: true
+    required: false
+    default: ${{ secrets.USER_NAME }}
   user-mail:
     description: 'The email of the user'
-    required: true
+    required: false
+    default: ${{ secrets.USER_MAIL }}
 
 runs:
   using: 'composite'
