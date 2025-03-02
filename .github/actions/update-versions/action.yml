@@ -23,17 +23,24 @@ runs:
     - name: Get files with changes needed
       id: get-files
       shell: bash
-      run: | 
-        grep -rn %CURRENT_VERSION% ./src >> files.txt
-        echo "::set-output name=stdout::$?"
+      run: |
+        result=$(grep -rn "%CURRENT_VERSION%" ./src)
+  
+        exit_code=$?
+  
+        echo "$result" > files.txt
+        echo "Готово! Код завершения: $exit_code"
+  
+        echo "::set-output name=stdout::$result"
+        echo "::set-output name=exit_code::$exit_code"
 
     - name: Replace version
-      if: steps.get-files.outputs.stdout == 0
+      if: steps.get-files.outputs.exit_code == 0
       shell: bash
       run: find ./src -type f -exec sed -i "s/%CURRENT_VERSION%/${{ inputs.version }}/g" {} +
 
     - name: Commit and push changes
-      if: steps.get-files.outputs.stdout == 0
+      if: steps.get-files.outputs.exit_code == 0
       shell: bash
       run: |
         git checkout ${{ inputs.branch-name }}
@@ -45,5 +52,5 @@ runs:
       shell: bash
       run: |
         echo -e "\n\e[33mFiles with changes:"
-        cat files.txt
+        echo ${{ steps.get-files.outputs.stdout }}
         echo -e "\e[0m"
