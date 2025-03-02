@@ -59,12 +59,3 @@ runs:
 
         git tag -f ${{ inputs.tag-name }} "release/${{ inputs.version }}"
         git push --tags -f
-
-# master -> version to x.y.z-release -> push master
-# -> new branch release/x.y.z -> push release/x.y.z
-# -> new branch patch/x.y -> change version to x.y.z+1-snapshot -> push patch/x.y
-# -> checkout master -> change version to x.y+1.0-snapshot -> push master
-
-# patch -> version to x.y.z-release -> push patch/x.y
-# -> new branch release/x.y.z -> push release/x.y.z
-# -> checkout patch -> change version to x.y.z+1-snapshot -> push patch/x.y
