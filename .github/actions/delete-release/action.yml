@@ -23,8 +23,7 @@ runs:
     - name: Delete release
       shell: bash
       run: |
-        echo -e "\e[33mDeleting release due to failure in previous jobs\e[0m"
-        echo "Deleting release due to failure in previous jobs"
+        echo -e "\e[33mDeleting release ${{ inputs.release-tag }} due to failure in previous jobs\e[0m"
         curl -X DELETE \
           -H "Authorization: token ${{ inputs.github-token }}" \
           https://api.github.com/repos/"${{ inputs.repository }}"/releases/"${{ inputs.release-id }}"
@@ -32,7 +31,7 @@ runs:
     - name: Delete release tag
       shell: bash
       run: |
-        echo -e "\e[33mDeleting release tag due to failure in previous jobs\e[0m"
+        echo -e "\e[33mDeleting release tag ${{ inputs.release-tag }} due to failure in previous jobs\e[0m"
         curl -X DELETE \
           -H "Authorization: token ${{ inputs.github-token }}" \
           https://api.github.com/repos/"${{ inputs.repository }}"/git/refs/tags/"${{ inputs.release-tag }}"

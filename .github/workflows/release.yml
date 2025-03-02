@@ -47,11 +47,14 @@ jobs:
       - name: Extract versions
         uses: ./.github/actions/extract-version
 
-      - name: Update versions
-        uses: ./.github/actions/update-versions
-
       - name: Get branch
         uses: ./.github/actions/extract-branch
+
+      - name: Update versions
+        uses: ./.github/actions/update-versions
+        with:
+          user-token: ${{ secrets.USER_TOKEN }}
+
 
 #      - name: Create branches
 #        run: |
