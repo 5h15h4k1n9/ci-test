@@ -27,12 +27,8 @@ runs:
         result=$(grep -rn "%CURRENT_VERSION%" ./src)
   
         exit_code=$?
-  
-        echo "$result" > files.txt
-        echo "Готово! Код завершения: $exit_code"
-  
-        echo "::set-output name=stdout::$result"
-        echo "::set-output name=exit_code::$exit_code"
+        echo "EXIT_CODE=$exit_code" >> "$GITHUB_OUTPUT"
+        echo "$result" >> "$GITHUB_OUTPUT"
 
     - name: Replace version
       if: steps.get-files.outputs.exit_code == 0
