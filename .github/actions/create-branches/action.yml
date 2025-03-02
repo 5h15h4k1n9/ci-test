@@ -45,7 +45,7 @@ runs:
         
         if [[ ${{ inputs.branch-name }} == "master" ]]; then
           git checkout -b "patch/${{ inputs.patch-version }}"
-          ./.github/scripts/update-project-version.sh ${{ inputs.branch-name }} "${{ inputs.next-patch-version }}-snapshot" ${{ inputs.user-token }} ${{ inputs.repository }}
+          ./.github/scripts/update-project-version.sh "patch/${{ inputs.patch-version }}" "${{ inputs.next-patch-version }}-snapshot" ${{ inputs.user-token }} ${{ inputs.repository }}
         
           git checkout ${{ inputs.branch-name }}
           ./.github/scripts/update-project-version.sh ${{ inputs.branch-name }} "${{ inputs.next-minor-version }}-snapshot" ${{ inputs.user-token }} ${{ inputs.repository }}
