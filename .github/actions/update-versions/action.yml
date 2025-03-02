@@ -26,18 +26,19 @@ runs:
 
     - name: Replace version
       shell: bash
-      run: find ./src -type f -exec sed -i 's/%CURRENT_VERSION%/${{ inputs.version }}/g' {} +
+      run: find ./src -type f -exec sed -i "s/%CURRENT_VERSION%/${{ inputs.version }}/g" {} +
 
     - name: Commit and push changes
       shell: bash
       run: |
         git checkout ${{ inputs.branch-name }}
         git add ./src
-        git commit -m "Update version to ${{ inputs.version }}"
+        git commit -m "release: Update version to ${{ inputs.version }}"
         git push https://x-access-token:${{ inputs.user-token }}@github.com/${{ inputs.repository }}.git ${{ inputs.branch-name }}
 
     - name: Log change files
       shell: bash
       run: |
-        echo "\nChanges made to the following files:"
+        echo -e "\n\e[31mFiles with changes:"
         cat files.txt
+        echo -e "\e[0m"
