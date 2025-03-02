@@ -1,0 +1,67 @@
+name: Create Branches
+description: Create branches for the release and patch
+inputs:
+  user-token:
+    description: 'The user token'
+    required: true
+  repository:
+    description: 'The repository to push the changes to'
+    required: false
+    default: ${{ github.repository }}
+  branch-name:
+    description: 'The branch name'
+    required: false
+    default: "$BRANCH_NAME"
+  version:
+    description: 'The version of the release'
+    required: false
+    default: "$VERSION"
+  patch-version:
+    description: 'The patch version'
+    required: false
+    default: "$PATCH_VERSION"
+  next-patch-version:
+    description: 'The next patch version'
+    required: false
+    default: "$NEXT_PATCH_VERSION"
+  next-minor-version:
+    description: 'The next minor version'
+    required: false
+    default: "$NEXT_MINOR_VERSION"
+  tag-name:
+    description: 'The name of the tag'
+    required: false
+    default: ${{ github.event.release.tag_name }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Create branches
+      shell: bash
+      run: |
+        ./.guthub/scripts/update-project-version.sh ${{ inputs.branch-name }} "${{ inputs.version }}-release" ${{ inputs.user-token }} ${{ inputs.repository }}
+        git checkout -b release/${{ inputs.version }}
+        git push https://x-access-token:"${{ inputs.user-token }}"@github.com/"${{ inputs.repository }}".git "release/${{ inputs.version }}"
+        
+        if [[ ${{ inputs.branch-name }} == "master" ]]; then
+          git checkout -b ${{ inputs.branch-name }}
+          ./.guthub/scripts/update-project-version.sh ${{ inputs.branch-name }} "${{ inputs.next-patch-version }}-snapshot" ${{ inputs.user-token }} ${{ inputs.repository }}
+        
+          git checkout master
+          ./.guthub/scripts/update-project-version.sh ${{ inputs.branch-name }} "${{ inputs.next-minor-version }}-snapshot" ${{ inputs.user-token }} ${{ inputs.repository }}
+        else
+          git checkout ${{ inputs.branch-name }}
+          ./.guthub/scripts/update-project-version.sh ${{ inputs.branch-name }} "${{ inputs.next-patch-version }}-snapshot" ${{ inputs.user-token }} ${{ inputs.repository }}
+        fi
+
+#        git tag -f ${{ inputs.tag-name }} "release/${{ inputs.version }}"
+#        git push --tags -f
+
+# master -> version to x.y.z-release -> push master
+# -> new branch release/x.y.z -> push release/x.y.z
+# -> new branch patch/x.y -> change version to x.y.z+1-snapshot -> push patch/x.y
+# -> checkout master -> change version to x.y+1.0-snapshot -> push master
+
+# patch -> version to x.y.z-release -> push patch/x.y
+# -> new branch release/x.y.z -> push release/x.y.z
+# -> checkout patch -> change version to x.y.z+1-snapshot -> push patch/x.y

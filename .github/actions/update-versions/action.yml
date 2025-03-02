@@ -22,7 +22,7 @@ runs:
   steps:
     - name: Get files with changes needed
       shell: bash
-      run: grep -rn %CURRENT_VERSION% ./src >> files.txt
+      run: grep -rn %CURRENT_VERSION% ./src >> files.txt || true
 
     - name: Replace version
       shell: bash
