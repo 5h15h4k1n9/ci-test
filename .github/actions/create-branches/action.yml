@@ -43,6 +43,8 @@ runs:
         
         if [[ ${{ inputs.branch-name }} == "master" ]]; then
           git checkout -b "patch/${{ inputs.patch-version }}"
+          ./.github/scripts/update-project-version.sh "patch/${{ inputs.patch-version }}" "${{ inputs.patch-version }}-patch" ${{ inputs.user-token }} ${{ inputs.repository }}
+        
           git checkout -b "release/${{ inputs.version }}" "patch/${{ inputs.patch-version }}"
         
           ./.github/scripts/update-project-version.sh "release/${{ inputs.version }}" "${{ inputs.version }}-release" ${{ inputs.user-token }} ${{ inputs.repository }}
