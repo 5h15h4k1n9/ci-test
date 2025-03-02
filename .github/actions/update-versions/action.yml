@@ -24,8 +24,10 @@ runs:
       id: get-files
       shell: bash
       run: |
+        set +e
         result=$(grep -rn "%CURRENT_VERSION%" ./src)
         exit_code=$?
+        set -e
       
         # Если grep вернул код 1 (ничего не найдено), не прерываем выполнение
         if [ $exit_code -eq 1 ]; then
