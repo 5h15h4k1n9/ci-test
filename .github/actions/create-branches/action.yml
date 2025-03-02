@@ -39,15 +39,17 @@ runs:
     - name: Create branches
       shell: bash
       run: |
+        git checkout ${{ inputs.branch-name }}
+        
         if [[ ${{ inputs.branch-name }} == "master" ]]; then
-          git checkout -b "patch/${{ inputs.patch-version }}" "${{ inputs.branch-name }}"
+          git checkout -b "patch/${{ inputs.patch-version }}"
           git checkout -b "release/${{ inputs.version }}" "patch/${{ inputs.patch-version }}"
         
           ./.github/scripts/update-project-version.sh "release/${{ inputs.version }}" "${{ inputs.version }}-release" ${{ inputs.user-token }} ${{ inputs.repository }}
           ./.github/scripts/update-project-version.sh "patch/${{ inputs.patch-version }}" "${{ inputs.next-patch-version }}-snapshot" ${{ inputs.user-token }} ${{ inputs.repository }}
           ./.github/scripts/update-project-version.sh ${{ inputs.branch-name }} "${{ inputs.next-minor-version }}-snapshot" ${{ inputs.user-token }} ${{ inputs.repository }}
         else
-          git checkout -b "release/${{ inputs.version }}" "${{ inputs.branch-name }}"
+          git checkout -b "release/${{ inputs.version }}"
         
           ./.github/scripts/update-project-version.sh "release/${{ inputs.version }}" "${{ inputs.version }}-release" ${{ inputs.user-token }} ${{ inputs.repository }}
           ./.github/scripts/update-project-version.sh ${{ inputs.branch-name }} "${{ inputs.next-patch-version }}-snapshot" ${{ inputs.user-token }} ${{ inputs.repository }}
