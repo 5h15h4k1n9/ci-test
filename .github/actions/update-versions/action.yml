@@ -39,6 +39,6 @@ runs:
     - name: Log change files
       shell: bash
       run: |
-        echo -e "\n\e[31mFiles with changes:"
+        echo -e "\n\e[33mFiles with changes:"
         cat files.txt
         echo -e "\e[0m"

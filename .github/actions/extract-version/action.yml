@@ -17,7 +17,7 @@ runs:
       shell: bash
       run: |
         if [[ ! $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-          echo -e "\e[31mInvalid version format: $VERSION\e[0m"
+          echo -e "\n\e[31mInvalid version format: $VERSION\e[0m"
           exit 1
         fi
 
