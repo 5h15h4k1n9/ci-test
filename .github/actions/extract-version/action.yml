@@ -17,14 +17,16 @@ runs:
       shell: bash
       run: |
         if [[ ! $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-          echo "Invalid version format: $VERSION"
+          echo -e "\e[31mInvalid version format: $VERSION\e[0m"
           exit 1
         fi
 
     - name: Log version
       shell: bash
       run: |
-        echo "VERSION=$VERSION"
-        echo "MINOR_VERSION=$MINOR_VERSION"
-        echo "PATCH_VERSION=$PATCH_VERSION"
-        echo "PATCH_BRANCH_NAME=$PATCH_BRANCH_NAME"
+        echo "\n"
+        echo -e "\e[32mVERSION=$VERSION\e[0m"
+        echo -e "\e[32mMINOR_VERSION=$MINOR_VERSION\e[0m"
+        echo -e "\e[32mPATCH_VERSION=$PATCH_VERSION\e[0m"
+        echo "\n"
+        echo -e "\e[32mPATCH_BRANCH_NAME=$PATCH_BRANCH_NAME\e[0m"

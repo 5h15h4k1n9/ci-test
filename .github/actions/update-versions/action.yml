@@ -4,15 +4,39 @@ inputs:
   version:
     description: 'The version of the release'
     required: false
-    default: "VERSION"
+    default: "$VERSION"
+  branch-name:
+    description: 'The branch name'
+    required: false
+    default: "$BRANCH_NAME"
+  user-token:
+    description: 'The user token'
+    required: true
+  repository:
+    description: 'The repository to push the changes to'
+    required: false
+    default: %{{ github.repository }}
 
 runs:
   using: 'composite'
   steps:
-    - name: Log every file
+    - name: Get files with changes needed
       shell: bash
-      run: grep -rn %CURRENT_VERSION% ./src
+      run: grep -rn %CURRENT_VERSION% ./src >> files.txt
 
     - name: Replace version
       shell: bash
       run: find /path/to/directory -type f -exec sed -i 's/%CURRENT_VERSION%/${{ inputs.version }}/g' {} +
+
+    - name: Commit and push changes
+      shell: bash
+      run: |
+        git add .
+        git commit -m "Update version to ${{ inputs.version }}"
+        git push https://x-access-token:${{ inputs.user-token }}@github.com/${{ inputs.repository }}.git ${{ inputs.branch-name }}
+
+    - name: Log change files
+      shell: bash
+      run: |
+        echo "\nChanges made to the following files:"
+        cat files.txt
