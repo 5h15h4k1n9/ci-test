@@ -50,10 +50,10 @@ jobs:
       - name: Get branch
         uses: ./.github/actions/extract-branch
 
-      - name: Update versions
-        uses: ./.github/actions/update-versions
-        with:
-          user-token: ${{ secrets.USER_TOKEN }}
+#      - name: Update versions
+#        uses: ./.github/actions/update-versions
+#        with:
+#          user-token: ${{ secrets.USER_TOKEN }}
 
       - name: Create branches
         uses: ./.github/actions/create-branches
