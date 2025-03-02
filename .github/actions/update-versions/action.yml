@@ -15,7 +15,7 @@ inputs:
   repository:
     description: 'The repository to push the changes to'
     required: false
-    default: %{{ github.repository }}
+    default: ${{ github.repository }}
 
 runs:
   using: 'composite'

@@ -24,9 +24,7 @@ runs:
     - name: Log version
       shell: bash
       run: |
-        echo "\n"
-        echo -e "\e[32mVERSION=$VERSION\e[0m"
+        echo -e "\n\e[32mVERSION=$VERSION\e[0m"
         echo -e "\e[32mMINOR_VERSION=$MINOR_VERSION\e[0m"
         echo -e "\e[32mPATCH_VERSION=$PATCH_VERSION\e[0m"
-        echo "\n"
-        echo -e "\e[32mPATCH_BRANCH_NAME=$PATCH_BRANCH_NAME\e[0m"
+        echo -e "\n\e[32mPATCH_BRANCH_NAME=$PATCH_BRANCH_NAME\e[0m"
