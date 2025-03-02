@@ -48,7 +48,7 @@ jobs:
         uses: ./.github/actions/extract-version
 
       - name: Get branch
-        uses: ./.github/actions/extract-version
+        uses: ./.github/actions/extract-branch
 
 #      - name: Create branches
 #        run: |
