@@ -4,7 +4,7 @@ inputs:
   version:
     description: 'The version of the release'
     required: false
-    default: ${{ github.env.VERSION }}
+    default: $VERSION
 
 runs:
   using: 'composite'
@@ -16,4 +16,4 @@ runs:
     - name: Log branch name
       shell: bash
       run: |
-        echo "BRANCH_NAME=${{ github.env.BRANCH_NAME }}"
+        echo "BRANCH_NAME=$BRANCH_NAME"

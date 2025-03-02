@@ -16,7 +16,7 @@ runs:
     - name: Log version
       shell: bash
       run: |
-        echo "VERSION=${{ github.env.VERSION }}"
-        echo "MINOR_VERSION=${{ github.env.MINOR_VERSION }}"
-        echo "PATCH_VERSION=${{ github.env.PATCH_VERSION }}"
-        echo "PATCH_BRANCH_NAME=${{ github.env.PATCH_BRANCH_NAME }}"
+        echo "VERSION=$VERSION"
+        echo "MINOR_VERSION=$MINOR_VERSION"
+        echo "PATCH_VERSION=$PATCH_VERSION"
+        echo "PATCH_BRANCH_NAME=$PATCH_BRANCH_NAME"
