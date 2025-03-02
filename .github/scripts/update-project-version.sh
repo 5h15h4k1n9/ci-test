@@ -3,6 +3,8 @@
 # $3: github token
 # $4: github repository
 
+echo -e "\n\e[32mUpdating project version to $2 in branch $1\e[0m\n"
+
 git checkout "$1"
 
 sed -i "s/version = \"[0-9.]*-[a-z]*\"/version = \"$2/" build.gradle.kts
