@@ -4,14 +4,18 @@ inputs:
   version:
     description: 'The version of the release'
     required: false
-    default: $VERSION
+    default: "$VERSION"
+  patch-branch-name:
+    description: 'The patch branch name'
+    required: false
+    default: "$PATCH_BRANCH_NAME"
 
 runs:
   using: 'composite'
   steps:
     - name: Extract branch name
       shell: bash
-      run: ./.github/scripts/extract-branch.sh ${{ inputs.tag-name }}
+      run: ./.github/scripts/extract-branch.sh ${{ inputs.version }} ${{ inputs.patch-branch-name }}
 
     - name: Log branch name
       shell: bash
