@@ -3,8 +3,7 @@ description: Deletes release and its tag
 inputs:
   github-token:
     description: 'The GitHub token'
-    required: false
-    default: ${{ secrets.GITHUB_TOKEN }}
+    required: true
   release-id:
     description: 'The ID of the release to delete'
     required: false
