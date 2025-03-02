@@ -4,11 +4,11 @@ inputs:
   version:
     description: 'The version of the release'
     required: false
-    default: "$VERSION"
+    default: $VERSION
   branch-name:
     description: 'The branch name'
     required: false
-    default: "$BRANCH_NAME"
+    default: $BRANCH_NAME
   user-token:
     description: 'The user token'
     required: true
@@ -31,7 +31,7 @@ runs:
     - name: Commit and push changes
       shell: bash
       run: |
-        git add .
+        git add ./src
         git commit -m "Update version to ${{ inputs.version }}"
         git push https://x-access-token:${{ inputs.user-token }}@github.com/${{ inputs.repository }}.git ${{ inputs.branch-name }}
 
