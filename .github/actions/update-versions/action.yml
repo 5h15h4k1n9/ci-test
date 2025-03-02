@@ -21,14 +21,19 @@ runs:
   using: 'composite'
   steps:
     - name: Get files with changes needed
+      id: get-files
       shell: bash
-      run: grep -rn %CURRENT_VERSION% ./src >> files.txt || true
+      run: | 
+        grep -rn %CURRENT_VERSION% ./src >> files.txt
+        echo "::set-output name=stdout::$?"
 
     - name: Replace version
+      if: steps.get-files.outputs.stdout == 0
       shell: bash
       run: find ./src -type f -exec sed -i "s/%CURRENT_VERSION%/${{ inputs.version }}/g" {} +
 
     - name: Commit and push changes
+      if: steps.get-files.outputs.stdout == 0
       shell: bash
       run: |
         git checkout ${{ inputs.branch-name }}
