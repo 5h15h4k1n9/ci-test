@@ -5,10 +5,10 @@ inputs:
     description: 'The version of the release'
     required: false
     default: "$VERSION"
-  patch-branch-name:
-    description: 'The patch branch name'
+  patch-version:
+    description: 'The version of patch'
     required: false
-    default: "$PATCH_BRANCH_NAME"
+    default: "$PATCH_VERSION"
 
 runs:
   using: 'composite'
@@ -19,7 +19,7 @@ runs:
         if [[ ${{ inputs.version }} =~ ^[0-9]+\.[0-9]+\.0$ ]]; then
             BRANCH_NAME=master
         else
-            BRANCH_NAME="patch/${{ inputs.patch-branch-name }}"
+            BRANCH_NAME="patch/${{ inputs.patch-version }}"
         fi
         echo "BRANCH_NAME=$BRANCH_NAME" >> "$GITHUB_ENV"
 
