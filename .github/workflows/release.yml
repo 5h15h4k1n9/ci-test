@@ -47,6 +47,9 @@ jobs:
       - name: Extract versions
         uses: ./.github/actions/extract-version
 
+      - name: Update versions
+        uses: ./.github/actions/update-versions
+
       - name: Get branch
         uses: ./.github/actions/extract-branch
 
