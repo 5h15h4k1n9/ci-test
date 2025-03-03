@@ -37,7 +37,7 @@ runs:
       shell: bash
       run: |
         IMAGE_NAME_DH="${{ inputs.docker-username }}/ci-test"
-        IMAGE_NAME_GH="ghcr.io/${{ inputs.github-user }}/ci-test"
+        IMAGE_NAME_GH="ghcr.io/${{ inputs.docker-username }}/ci-test"
         
         echo "IMAGE_NAME_DH=$IMAGE_NAME_DH" >> $GITHUB_ENV
         echo "IMAGE_NAME_GH=$IMAGE_NAME_GH" >> $GITHUB_ENV
