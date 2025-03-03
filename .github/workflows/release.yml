@@ -67,6 +67,7 @@ jobs:
           docker-username: ${{ secrets.DOCKER_USERNAME }}
           user-token: ${{ secrets.USER_TOKEN }}
           github-user: ${{ secrets.USER_NAME }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
   delete-release:
     needs:

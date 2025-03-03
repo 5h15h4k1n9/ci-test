@@ -17,6 +17,9 @@ inputs:
   github-user:
     description: 'GitHub user'
     required: true
+  github-token:
+    description: 'GitHub token'
+    required: true
 
 runs:
   using: 'composite'
@@ -31,7 +34,7 @@ runs:
 
     - name: Login to Github Package Registry
       shell: bash
-      run: echo "${{ inputs.user-token }}" | docker login ghcr.io -u "${{ inputs.github-user }}" --password-stdin
+      run: echo "${{ inputs.github-token }}" | docker login ghcr.io -u "${{ inputs.github-user }}" --password-stdin
 
     - name: Set image names
       shell: bash
