@@ -1,0 +1,54 @@
+name: Publish package
+description: Publishes package to GitHub Package Registry and Docker Hub
+inputs:
+  version:
+    description: 'Version of the package'
+    required: false
+    default: "$VERSION"
+  docker-token:
+    description: 'Docker Hub token'
+    required: true
+  docker-username:
+    description: 'Docker Hub username'
+    required: true
+  user-token:
+    description: 'GitHub token'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Login to DockerHub
+      shell: bash
+      run: echo "${{ inputs.docker-token }}" | docker login -u "${{ inputs.docker-username }}" --password-stdin
+
+    - name: Login to Github Package Registry
+      shell: bash
+      run: echo "${{ inputs.user-token }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+    - name: Set image names
+      shell: bash
+      run: |
+        IMAGE_NAME_DH="${{ inputs.docker-token }}/ci-test"
+        IMAGE_NAME_GH="ghcr.io/${{ github.repository_owner }}/ci-test"
+        
+        echo "IMAGE_NAME_DH=$IMAGE_NAME_DH" >> $GITHUB_ENV
+        echo "IMAGE_NAME_GH=$IMAGE_NAME_GH" >> $GITHUB_ENV
+
+    - name: Build boot jar
+      shell: bash
+      uses: ./.github/actions/execute-gradle
+      with:
+        gradle-commands: ':bootJar'
+
+    - name: Build and Tag Docker Image
+      run: |
+        docker build -t $IMAGE_NAME_DH:${{ inputs.version }} -t $IMAGE_NAME_GH:${{ inputs.version }} .
+
+    - name: Push Docker Image to Docker Hub
+      run: |
+        docker push $IMAGE_NAME_DH:${{ inputs.version }}
+
+    - name: Push Docker Image to GitHub Packages
+      run: |
+        docker push $IMAGE_NAME_GH:${{ inputs.version }}
