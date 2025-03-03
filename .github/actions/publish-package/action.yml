@@ -29,8 +29,8 @@ runs:
     - name: Get repository name
       shell: bash
       run: |
-          REPOSITORY_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          echo "REPOSITORY_NAME=$REPOSITORY_NAME" >> $GITHUB_ENV
+        REPOSITORY_NAME=$(echo ${{ github.repository }} | cut -d '/' -f 2)
+        echo "REPOSITORY_NAME=$REPOSITORY_NAME" >> $GITHUB_ENV
 
     - name: Set image names
       shell: bash
