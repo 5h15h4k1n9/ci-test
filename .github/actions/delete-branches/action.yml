@@ -11,8 +11,6 @@ runs:
     - name: Delete release branch
       shell: bash
       run: |
-        git checkout ${{ env.BRANCH_NAME }}
-        
         git push https://x-access-token:${{ inputs.github-token }}@github.com/${{ github.repository }}.git --delete "release/${{ env.VERSION }}"
         echo -e "\n\e[33mDeleted release branch release/${{ env.VERSION }}\e[0m"
         
