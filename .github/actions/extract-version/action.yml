@@ -1,17 +1,12 @@
 name: Configure Git
 description: Adds the necessary configurations to Git
-inputs:
-  tag-name:
-    description: 'The name of the tag'
-    required: false
-    default: ${{ github.event.release.tag_name }}
 
 runs:
   using: 'composite'
   steps:
     - name: Extract version from release tag
       shell: bash
-      run: ./.github/scripts/extract-versions.sh "${{ inputs.tag-name }}"
+      run: ./.github/scripts/extract-versions.sh "${{ github.event.release.tag_name }}"
 
     - name: Validate version
       shell: bash

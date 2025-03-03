@@ -1,37 +1,9 @@
 name: Create Branches
 description: Create branches for the release and patch
 inputs:
-  user-token:
-    description: 'The user token'
+  github-token:
+    description: 'The GitHub token'
     required: true
-  repository:
-    description: 'The repository to push the changes to'
-    required: false
-    default: ${{ github.repository }}
-  branch-name:
-    description: 'The branch name'
-    required: false
-    default: "$BRANCH_NAME"
-  version:
-    description: 'The version of the release'
-    required: false
-    default: "$VERSION"
-  patch-version:
-    description: 'The patch version'
-    required: false
-    default: "$PATCH_VERSION"
-  next-patch-version:
-    description: 'The next patch version'
-    required: false
-    default: "$NEXT_PATCH_VERSION"
-  next-minor-version:
-    description: 'The next minor version'
-    required: false
-    default: "$NEXT_MINOR_VERSION"
-  tag-name:
-    description: 'The name of the tag'
-    required: false
-    default: ${{ github.event.release.tag_name }}
 
 runs:
   using: 'composite'
@@ -39,23 +11,23 @@ runs:
     - name: Create branches
       shell: bash
       run: |
-        git checkout ${{ inputs.branch-name }}
+        git checkout ${{ env.BRANCH_NAME }}
         
-        if [[ ${{ inputs.branch-name }} == "master" ]]; then
-          git checkout -b "patch/${{ inputs.patch-version }}"
-          ./.github/scripts/update-project-version.sh "patch/${{ inputs.patch-version }}" "${{ inputs.patch-version }}-patch" ${{ inputs.user-token }} ${{ inputs.repository }}
+        if [[ ${{ env.BRANCH_NAME }} == "master" ]]; then
+          git checkout -b "patch/${{ env.PATCH_VERSION }}"
+          ./.github/scripts/update-project-version.sh "patch/${{ env.PATCH_VERSION }}" "${{ env.PATCH_VERSION }}-patch" ${{ inputs.github-token }} ${{ github.repository }}
         
-          git checkout -b "release/${{ inputs.version }}" "patch/${{ inputs.patch-version }}"
+          git checkout -b "release/${{ env.VERSION }}" "patch/${{ env.PATCH_VERSION }}"
         
-          ./.github/scripts/update-project-version.sh "release/${{ inputs.version }}" "${{ inputs.version }}-release" ${{ inputs.user-token }} ${{ inputs.repository }}
-          ./.github/scripts/update-project-version.sh "patch/${{ inputs.patch-version }}" "${{ inputs.next-patch-version }}-snapshot" ${{ inputs.user-token }} ${{ inputs.repository }}
-          ./.github/scripts/update-project-version.sh ${{ inputs.branch-name }} "${{ inputs.next-minor-version }}-snapshot" ${{ inputs.user-token }} ${{ inputs.repository }}
+          ./.github/scripts/update-project-version.sh "release/${{ env.VERSION }}" "${{ env.VERSION }}-release" ${{ inputs.github-token }} ${{ github.repository }}
+          ./.github/scripts/update-project-version.sh "patch/${{ env.PATCH_VERSION }}" "${{ env.NEXT_PATCH_VERSION }}-snapshot" ${{ inputs.github-token }} ${{ github.repository }}
+          ./.github/scripts/update-project-version.sh ${{ env.BRANCH_NAME }} "${{ env.NEXT_MINOR_VERSION }}-snapshot" ${{ inputs.github-token }} ${{ github.repository }}
         else
-          git checkout -b "release/${{ inputs.version }}"
+          git checkout -b "release/${{ env.VERSION }}"
         
-          ./.github/scripts/update-project-version.sh "release/${{ inputs.version }}" "${{ inputs.version }}-release" ${{ inputs.user-token }} ${{ inputs.repository }}
-          ./.github/scripts/update-project-version.sh ${{ inputs.branch-name }} "${{ inputs.next-patch-version }}-snapshot" ${{ inputs.user-token }} ${{ inputs.repository }}
+          ./.github/scripts/update-project-version.sh "release/${{ env.VERSION }}" "${{ env.VERSION }}-release" ${{ inputs.github-token }} ${{ github.repository }}
+          ./.github/scripts/update-project-version.sh ${{ env.BRANCH_NAME }} "${{ env.NEXT_PATCH_VERSION }}-snapshot" ${{ inputs.github-token }} ${{ github.repository }}
         fi
 
-        git tag -f ${{ inputs.tag-name }} "release/${{ inputs.version }}"
+        git tag -f ${{ github.event.release.tag_name }} "release/${{ env.VERSION }}"
         git push --tags -f

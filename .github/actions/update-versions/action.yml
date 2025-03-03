@@ -1,21 +1,9 @@
 name: Update versions
 description: Replaces %CURRENT_VERSION% string in every source file with the current version
 inputs:
-  version:
-    description: 'The version of the release'
-    required: false
-    default: "$VERSION"
-  branch-name:
-    description: 'The branch name'
-    required: false
-    default: "$BRANCH_NAME"
-  user-token:
-    description: 'The user token'
+  github-token:
+    description: 'The GitHub token'
     required: true
-  repository:
-    description: 'The repository to push the changes to'
-    required: false
-    default: ${{ github.repository }}
 
 runs:
   using: 'composite'
@@ -38,7 +26,7 @@ runs:
     - name: Replace version
       if: steps.get-files.outputs.exit_code == 0
       shell: bash
-      run: find ./src -type f -exec sed -i "s/%CURRENT_VERSION%/${{ inputs.version }}/g" {} +
+      run: find ./src -type f -exec sed -i "s/%CURRENT_VERSION%/${{ env.VERSION }}/g" {} +
 
     - name: Commit and push changes
       if: steps.get-files.outputs.exit_code == 0
@@ -46,8 +34,8 @@ runs:
       run: |
         git checkout ${{ inputs.branch-name }}
         git add ./src
-        git commit -m "release: Update version to ${{ inputs.version }}"
-        git push https://x-access-token:${{ inputs.user-token }}@github.com/${{ inputs.repository }}.git ${{ inputs.branch-name }}
+        git commit -m "release: Update version to ${{ env.version }}"
+        git push https://x-access-token:${{ inputs.github-token }}@github.com/${{ github.repository }}.git ${{ env.BRANCH_NAME }}
 
     - name: Log change files
       shell: bash

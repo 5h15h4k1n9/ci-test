@@ -54,20 +54,18 @@ jobs:
       - name: Update versions
         uses: ./.github/actions/update-versions
         with:
-          user-token: ${{ secrets.USER_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create branches
         uses: ./.github/actions/create-branches
         with:
-          user-token: ${{ secrets.USER_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish package
         uses: ./.github/actions/publish-package
         with:
           docker-token: ${{ secrets.DOCKER_TOKEN }}
           docker-username: ${{ secrets.DOCKER_USERNAME }}
-          user-token: ${{ secrets.USER_TOKEN }}
-          github-user: ${{ secrets.USER_NAME }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
   delete-release:

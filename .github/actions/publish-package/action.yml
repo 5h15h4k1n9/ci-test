@@ -1,21 +1,11 @@
 name: Publish package
 description: Publishes package to GitHub Package Registry and Docker Hub
 inputs:
-  version:
-    description: 'Version of the package'
-    required: false
-    default: "$VERSION"
   docker-token:
     description: 'Docker Hub token'
     required: true
   docker-username:
     description: 'Docker Hub username'
-    required: true
-  user-token:
-    description: 'GitHub token'
-    required: true
-  github-user:
-    description: 'GitHub user'
     required: true
   github-token:
     description: 'GitHub token'
@@ -39,8 +29,8 @@ runs:
     - name: Set image names
       shell: bash
       run: |
-        IMAGE_NAME_DH="${{ inputs.docker-username }}/ci-test"
-        IMAGE_NAME_GH="ghcr.io/${{ github.repository_owner }}/ci-test"
+        IMAGE_NAME_DH="${{ inputs.docker-username }}/${{ github.repository }}"
+        IMAGE_NAME_GH="ghcr.io/${{ inputs.docker-username }}/${{ github.repository }}"
         
         echo "IMAGE_NAME_DH=$IMAGE_NAME_DH" >> $GITHUB_ENV
         echo "IMAGE_NAME_GH=$IMAGE_NAME_GH" >> $GITHUB_ENV
@@ -61,15 +51,15 @@ runs:
     - name: Build and Tag Docker Image
       shell: bash
       run: |
-        docker build -t "$IMAGE_NAME_DH:${{ inputs.version }}" .
-        docker build -t "$IMAGE_NAME_GH:${{ inputs.version }}" .
+        docker build -t "$IMAGE_NAME_DH:${{ env.VERSION }}" .
+        docker build -t "$IMAGE_NAME_GH:${{ env.VERSION }}" .
 
     - name: Push Docker Image to Docker Hub
       shell: bash
       run: |
-        docker push $IMAGE_NAME_DH:${{ inputs.version }}
+        docker push $IMAGE_NAME_DH:${{ env.VERSION }}
 
     - name: Push Docker Image to GitHub Packages
       shell: bash
       run: |
-        docker push $IMAGE_NAME_GH:${{ inputs.version }}
+        docker push $IMAGE_NAME_GH:${{ env.VERSION }}
