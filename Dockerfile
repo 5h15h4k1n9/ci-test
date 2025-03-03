@@ -7,7 +7,7 @@ ARG VERSION=54.1.0-snapshot
 
 #Copying application
 WORKDIR /$APP_DIR
-ARG JAR_FILE=build/libs/trik-testsys-web-client-$VERSION.jar
+ARG JAR_FILE=build/libs/ci-test-$VERSION.jar
 ARG APP=app.jar
 COPY $JAR_FILE $APP
 
