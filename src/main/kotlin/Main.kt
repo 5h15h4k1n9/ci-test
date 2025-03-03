@@ -1,7 +1,7 @@
 package com.trikset
 
 /**
- * @since 20.0.0
+ * @since %CURRENT_VERSION%
  */
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
