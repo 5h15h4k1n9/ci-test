@@ -31,7 +31,7 @@ runs:
 
     - name: Login to Github Package Registry
       shell: bash
-      run: echo "${{ inputs.user-token }}" | docker login ghcr.io -u ${{ inputs.github-user }} --password-stdin
+      run: echo "${{ inputs.user-token }}" | docker login ghcr.io -u "${{ inputs.github-user }}" --password-stdin
 
     - name: Set image names
       shell: bash
