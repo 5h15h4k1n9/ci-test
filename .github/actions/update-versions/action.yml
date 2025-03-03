@@ -50,6 +50,7 @@ runs:
         git push https://x-access-token:${{ inputs.user-token }}@github.com/${{ inputs.repository }}.git ${{ inputs.branch-name }}
 
     - name: Log change files
+      if: steps.get-files.outputs.exit_code == 0
       shell: bash
       run: |
         echo -e "\n\e[33mFiles with changes:"
