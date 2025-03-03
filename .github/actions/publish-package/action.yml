@@ -47,6 +47,14 @@ runs:
       with:
         gradle-commands: 'build :bootJar'
 
+    - name: Cache Docker layers
+      uses: actions/cache@v3
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+
     - name: Build and Tag Docker Image
       shell: bash
       run: |
