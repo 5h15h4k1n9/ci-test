@@ -48,7 +48,7 @@ jobs:
       - name: Extract versions
         uses: ./.github/actions/extract-version
 
-      - name: Get branch
+      - name: Extract branch
         uses: ./.github/actions/extract-branch
 
       - name: Update versions
@@ -93,6 +93,9 @@ jobs:
 
       - name: Extract versions
         uses: ./.github/actions/extract-version
+
+      - name: Extract branch
+        uses: ./.github/actions/extract-branch
 
       - name: Delete branches
         uses: ./.github/actions/delete-branches
