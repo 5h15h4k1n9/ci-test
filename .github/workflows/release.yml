@@ -82,3 +82,16 @@ jobs:
         uses: ./.github/actions/delete-release
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  delete-branches:
+    needs:
+      - publish-release
+    if: ${{ failure() }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Delete branches
+        uses: ./.github/actions/delete-branches
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}

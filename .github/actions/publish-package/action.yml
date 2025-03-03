@@ -60,12 +60,13 @@ runs:
         docker build -t "$IMAGE_NAME_DH:${{ env.VERSION }}" .
         docker build -t "$IMAGE_NAME_GH:${{ env.VERSION }}" .
 
-    - name: Push Docker Image to Docker Hub
+    - name: Push Docker Image
       shell: bash
       run: |
         docker push $IMAGE_NAME_DH:${{ env.VERSION }}
-
-    - name: Push Docker Image to GitHub Packages
-      shell: bash
-      run: |
         docker push $IMAGE_NAME_GH:${{ env.VERSION }}
+        
+        if [[ "${{ env.BRANCH_NAME }}" == "master" ]]; then
+          docker push $IMAGE_NAME_DH:latest
+          docker push $IMAGE_NAME_GH:latest
+        fi
