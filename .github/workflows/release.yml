@@ -91,6 +91,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Extract versions
+        uses: ./.github/actions/extract-version
+
       - name: Delete branches
         uses: ./.github/actions/delete-branches
         with:

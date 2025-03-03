@@ -59,6 +59,11 @@ runs:
       run: |
         docker build -t "$IMAGE_NAME_DH:${{ env.VERSION }}" .
         docker build -t "$IMAGE_NAME_GH:${{ env.VERSION }}" .
+        
+        if [[ "${{ env.BRANCH_NAME }}" == "master" ]]; then
+          docker build -t "$IMAGE_NAME_DH:latest" .
+          docker build -t "$IMAGE_NAME_GH:latest" .
+        fi
 
     - name: Push Docker Image
       shell: bash
