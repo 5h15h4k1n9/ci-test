@@ -8,7 +8,7 @@ plugins {
     kotlin("plugin.jpa") version "1.6.21"
 }
 group = "com.trikset"
-version = "54.1.0-snapshot"
+version = "55.0-patch"
 
 repositories {
     mavenCentral()
