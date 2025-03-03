@@ -26,11 +26,17 @@ runs:
       shell: bash
       run: echo "${{ inputs.github-token }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
+    - name: Get repository name
+      shell: bash
+      run: |
+          REPOSITORY_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "REPOSITORY_NAME=$REPOSITORY_NAME" >> $GITHUB_ENV
+
     - name: Set image names
       shell: bash
       run: |
-        IMAGE_NAME_DH="${{ inputs.docker-username }}/ci-test"
-        IMAGE_NAME_GH="ghcr.io/${{ github.repository_owner }}/ci-test"
+        IMAGE_NAME_DH="${{ inputs.docker-username }}/${{ env.REPOSITORY_NAME }}"
+        IMAGE_NAME_GH="ghcr.io/${{ github.repository_owner }}/${{ env.REPOSITORY_NAME }}"
         
         echo "IMAGE_NAME_DH=$IMAGE_NAME_DH" >> $GITHUB_ENV
         echo "IMAGE_NAME_GH=$IMAGE_NAME_GH" >> $GITHUB_ENV
